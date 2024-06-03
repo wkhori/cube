@@ -6,21 +6,19 @@ import { Color, colorsMap } from '../types/cubeTypes';
 
 interface CubeletProps {
   position: number[];
+  geometry: RoundedBoxGeometry;
   colors: Color[]; // An array of 6 colors for the 6 sides of the cubelet
-  onDragEnd: (direction: 'horizontal' | 'vertical') => void;
 }
 
-const Cubelet: React.FC<CubeletProps> = ({ position, colors, onDragEnd }) => {
-  const geometry = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 3, 0.1), []);
+const Cubelet: React.FC<CubeletProps> = ({ position, geometry, colors }) => {
 
-  // Load the texture for the image
-  const texture = useLoader(TextureLoader, '/cube-logo.png'); // Reference the image in the public directory
+  
+  const cubeLogo = useLoader(TextureLoader, '/cube-logo.png');
 
-  // Geometry for the smaller plane to render the logo
   const logoGeometry = useMemo(() => new PlaneGeometry(0.6, 0.6), []);
 
-  // Check if this is the center white cubelet
-  const isCenterWhite = position[0] === 0 && position[1] === 1 && position[2] === 0;
+  // display the logo on the center of white face
+  const displayLogo = position[0] === 0 && position[1] === 1 && position[2] === 0;
 
   return (
     <mesh position={position as [number, number, number]} geometry={geometry} >
@@ -31,11 +29,11 @@ const Cubelet: React.FC<CubeletProps> = ({ position, colors, onDragEnd }) => {
           color={colorsMap[colors[i]] || 'black'}
         />
       ))}
-      {isCenterWhite && (
+      {displayLogo && (
         <mesh geometry={logoGeometry} position={[0, 0.51, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[0.6, 0.6]} />
           <meshBasicMaterial
-            map={texture}
+            map={cubeLogo}
             transparent={true}
           />
         </mesh>

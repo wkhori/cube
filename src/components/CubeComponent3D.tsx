@@ -1,58 +1,48 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { useCubeState } from '../hooks/useCubeState';
-import { Direction, Face } from '../types/cubeTypes';
+import { Face } from '../types/cubeTypes';
 import Cubelet from './Cubelet';
 
 const CubeComponent3D: React.FC = () => {
-  const { cubeState, handleRotate, getCubeletColors } = useCubeState();
+  const { cubeState, getCubeletColors } = useCubeState();
 
-  const handleDragEnd = (face: Face, direction: 'horizontal' | 'vertical') => {
-    const rotationDirection = direction === 'horizontal' ? Direction.Clockwise : Direction.Counterclockwise;
-    handleRotate(face, rotationDirection);
-  };
+
+  const geometry = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 3, 0.1), []);
+
 
   console.log(cubeState);
   return (
     <group scale={[2, 2, 2]}>
-      {Object.keys(cubeState).map((face) =>
-        [...Array(9).keys()].map((i) => {
-          const faceKey = face as Face;
-          const position = getCubeletPosition(faceKey, i);
-          const cubeletColors = getCubeletColors(position);
-          return (
-            <Cubelet
-              key={`${faceKey}-${i}`}
-              position={position}
-              colors={cubeletColors}
-              onDragEnd={(direction) => handleDragEnd(faceKey, direction)}
-            />
-          );
-        })
+      {[...Array(3).keys()].map((x) =>
+        [...Array(3).keys()].map((y) =>
+          [...Array(3).keys()].map((z) => {
+            const cubeletPosition: [number, number, number] = [x - 1, y - 1, z - 1];
+            const cubeletColors = getCubeletColors(cubeletPosition);
+            return (
+              <Cubelet
+                key={`${x}-${y}-${z}`}
+                position={cubeletPosition}
+                geometry={geometry}
+                colors={cubeletColors}
+              
+              />
+            );
+          })
+        )
       )}
     </group>
   );
 };
 
-const getCubeletPosition = (face: Face, index: number): [number, number, number] => {
-  const row = Math.floor(index / 3) - 1;
-  const col = (index % 3) - 1;
-
-  switch (face) {
-    case Face.Up:
-      return [col, 1, row];
-    case Face.Down:
-      return [col, -1, -row];
-    case Face.Front:
-      return [col, -row, 1];
-    case Face.Back:
-      return [-col, -row, -1];
-    case Face.Left:
-      return [-1, -row, -col];
-    case Face.Right:
-      return [1, -row, col];
-    default:
-      return [0, 0, 0];
-  }
+const getFaceFromPosition = (position: [number, number, number]): Face => {
+  if (position[1] === 1) return Face.Up;
+  if (position[1] === -1) return Face.Down;
+  if (position[2] === 1) return Face.Front;
+  if (position[2] === -1) return Face.Back;
+  if (position[0] === -1) return Face.Left;
+  if (position[0] === 1) return Face.Right;
+  return Face.Front;
 };
 
 export default CubeComponent3D;
