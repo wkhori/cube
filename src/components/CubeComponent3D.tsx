@@ -11,26 +11,48 @@ const CubeComponent3D: React.FC = () => {
     handleRotate(face, rotationDirection);
   };
 
+  console.log(cubeState);
   return (
-    <group scale={[2,2,2]}>
-      {[...Array(3).keys()].map((x) =>
-        [...Array(3).keys()].map((y) =>
-          [...Array(3).keys()].map((z) => {
-            const position: [number, number, number] = [x - 1, y - 1, z - 1];
-            const colors = getCubeletColors(position);
-            return (
-              <Cubelet
-                key={`${x}-${y}-${z}`}
-                position={position}
-                colors={colors}
-                onDragEnd={(direction) => handleDragEnd(Face.Front, direction)}
-              />
-            );
-          })
-        )
+    <group scale={[2, 2, 2]}>
+      {Object.keys(cubeState).map((face) =>
+        [...Array(9).keys()].map((i) => {
+          const faceKey = face as Face;
+          const position = getCubeletPosition(faceKey, i);
+          const cubeletColors = getCubeletColors(position);
+          return (
+            <Cubelet
+              key={`${faceKey}-${i}`}
+              position={position}
+              colors={cubeletColors}
+              onDragEnd={(direction) => handleDragEnd(faceKey, direction)}
+            />
+          );
+        })
       )}
     </group>
   );
+};
+
+const getCubeletPosition = (face: Face, index: number): [number, number, number] => {
+  const row = Math.floor(index / 3) - 1;
+  const col = (index % 3) - 1;
+
+  switch (face) {
+    case Face.Up:
+      return [col, 1, row];
+    case Face.Down:
+      return [col, -1, -row];
+    case Face.Front:
+      return [col, -row, 1];
+    case Face.Back:
+      return [-col, -row, -1];
+    case Face.Left:
+      return [-1, -row, -col];
+    case Face.Right:
+      return [1, -row, col];
+    default:
+      return [0, 0, 0];
+  }
 };
 
 export default CubeComponent3D;

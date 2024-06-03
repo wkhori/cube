@@ -21,7 +21,6 @@ const Cubelet: React.FC<CubeletProps> = ({ position, colors, onDragEnd }) => {
 
   // Check if this is the center white cubelet
   const isCenterWhite = position[0] === 0 && position[1] === 1 && position[2] === 0;
-  if (isCenterWhite) console.log('Center White Cubelet', position);
 
   return (
     <mesh position={position as [number, number, number]} geometry={geometry} >
