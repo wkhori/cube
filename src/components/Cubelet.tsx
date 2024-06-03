@@ -1,26 +1,27 @@
 import { useLoader } from '@react-three/fiber';
-import React from 'react';
-import { TextureLoader } from 'three';
+import React, { useMemo } from 'react';
+import { PlaneGeometry, TextureLoader } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { Color, colorsMap, cubeColorSides } from '../types/cubeTypes';
+import { Color, colorsMap } from '../types/cubeTypes';
 
 interface CubeletProps {
   position: number[];
+  colors: Color[]; // An array of 6 colors for the 6 sides of the cubelet
   onDragEnd: (direction: 'horizontal' | 'vertical') => void;
 }
 
-const getCubeletColors = (position: number[]): Color[] => {
-    return cubeColorSides.map(([axis, pos, color]) =>
-      position[axis as number] === pos ? color : Color.Black
-    ) as Color[];
-  };
-  
+const Cubelet: React.FC<CubeletProps> = ({ position, colors, onDragEnd }) => {
+  const geometry = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 3, 0.1), []);
 
-const Cubelet: React.FC<CubeletProps> = ({ position, onDragEnd }) => {
-  const geometry = new RoundedBoxGeometry(1, 1, 1, 3, 0.1);
-  const colors: Color[] = getCubeletColors(position);
+  // Load the texture for the image
   const texture = useLoader(TextureLoader, '/cube-logo.png'); // Reference the image in the public directory
-  const isCenter = position[0] === 0  && position[1] === 0;
+
+  // Geometry for the smaller plane to render the logo
+  const logoGeometry = useMemo(() => new PlaneGeometry(0.6, 0.6), []);
+
+  // Check if this is the center white cubelet
+  const isCenterWhite = position[0] === 0 && position[1] === 1 && position[2] === 0;
+  if (isCenterWhite) console.log('Center White Cubelet', position);
 
   return (
     <mesh position={position as [number, number, number]} geometry={geometry} >
@@ -28,12 +29,18 @@ const Cubelet: React.FC<CubeletProps> = ({ position, onDragEnd }) => {
         <meshStandardMaterial
           key={i}
           attach={`material-${i}`}
-          color={colorsMap[colors[i]] }
-          map={isCenter ? texture : undefined} // add logo to center cubelet
-          transparent={true}
-          
+          color={colorsMap[colors[i]] || 'black'}
         />
       ))}
+      {isCenterWhite && (
+        <mesh geometry={logoGeometry} position={[0, 0.51, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.6, 0.6]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent={true}
+          />
+        </mesh>
+      )}
     </mesh>
   );
 };

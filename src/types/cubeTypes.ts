@@ -7,6 +7,15 @@ export enum Face {
     Back = 'Back'
   }
 
+  export const faceToMaterialIndexMap = {
+    [Face.Up]: 0,
+    [Face.Down]: 1,
+    [Face.Left]: 2,
+    [Face.Right]: 3,
+    [Face.Front]: 4,
+    [Face.Back]: 5
+  };
+
   export enum Color {
     White = 'White',
     Yellow = 'Yellow',
@@ -34,10 +43,11 @@ export enum Face {
   };
 
   export const cubeColorSides = [
-    [0, 1, Color.Orange],
-    [0, -1, Color.Red],
-    [1, 1, Color.White],
-    [1, -1, Color.Yellow],
-    [2, 1, Color.Green],
-    [2, -1, Color.Blue]
-];
+    [0, 1, Color.Red],    // Right face
+    [0, -1, Color.Orange],// Left face
+    [1, 1, Color.White],  // Top face
+    [1, -1, Color.Blue],  // Bottom face
+    [2, 1, Color.Green],  // Front face
+    [2, -1, Color.Yellow] // Back face
+  ];
+
