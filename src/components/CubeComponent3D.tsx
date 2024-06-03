@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
+import { Color } from 'src/types/cubeTypes';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { useCubeState } from '../hooks/useCubeState';
-import { Face } from '../types/cubeTypes';
 import Cubelet from './Cubelet';
 
-const CubeComponent3D: React.FC = () => {
-  const { cubeState, getCubeletColors } = useCubeState();
+interface CubeComponent3DProps {
+  getCubeletColors: (position: [number, number, number]) => Color[];
+}
 
-
+const CubeComponent3D: React.FC<CubeComponent3DProps> = ({ getCubeletColors }) => {
   const geometry = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 3, 0.1), []);
 
-
-  console.log(cubeState);
   return (
     <group scale={[2, 2, 2]}>
       {[...Array(3).keys()].map((x) =>
@@ -25,7 +23,6 @@ const CubeComponent3D: React.FC = () => {
                 position={cubeletPosition}
                 geometry={geometry}
                 colors={cubeletColors}
-              
               />
             );
           })
@@ -33,16 +30,6 @@ const CubeComponent3D: React.FC = () => {
       )}
     </group>
   );
-};
-
-const getFaceFromPosition = (position: [number, number, number]): Face => {
-  if (position[1] === 1) return Face.Up;
-  if (position[1] === -1) return Face.Down;
-  if (position[2] === 1) return Face.Front;
-  if (position[2] === -1) return Face.Back;
-  if (position[0] === -1) return Face.Left;
-  if (position[0] === 1) return Face.Right;
-  return Face.Front;
 };
 
 export default CubeComponent3D;

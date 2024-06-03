@@ -1,4 +1,3 @@
-// Controls.tsx
 import React from 'react';
 import { Direction, Face } from '../types/cubeTypes';
 
@@ -8,8 +7,8 @@ interface ControlsProps {
 
 const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
   return (
-    <div className="controls">
-      <button onClick={() => onRotate(Face.Left, Direction.Clockwise)}>Left CW</button>
+    <div className="controls flex gap-2">
+      <button onClick={() => onRotate(Face.Left, Direction.Clockwise)} >Left CW</button>
       <button onClick={() => onRotate(Face.Left, Direction.Counterclockwise)}>Left CCW</button>
       <button onClick={() => onRotate(Face.Right, Direction.Clockwise)}>Right CW</button>
       <button onClick={() => onRotate(Face.Right, Direction.Counterclockwise)}>Right CCW</button>
@@ -26,4 +25,3 @@ const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
 };
 
 export default CubeControls;
-

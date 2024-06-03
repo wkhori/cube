@@ -26,7 +26,7 @@ const Cubelet: React.FC<CubeletProps> = ({ position, geometry, colors }) => {
         <meshStandardMaterial
           key={i}
           attach={`material-${i}`}
-          color={colorsMap[colors[i]] || 'black'}
+          color={colorsMap[colors[i]] }
         />
       ))}
       {displayLogo && (
