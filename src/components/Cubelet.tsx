@@ -19,7 +19,7 @@ const getCubeletColors = (position: number[]): Color[] => {
 const Cubelet: React.FC<CubeletProps> = ({ position, onDragEnd }) => {
   const geometry = new RoundedBoxGeometry(1, 1, 1, 3, 0.1);
   const colors: Color[] = getCubeletColors(position);
-  const texture = useLoader(TextureLoader, './src/assets/cube-logo.png');
+  const texture = useLoader(TextureLoader, './public/cube-logo.png');
   const isCenter = position[0] === 0  && position[1] === 0;
 
   return (
