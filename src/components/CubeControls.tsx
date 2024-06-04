@@ -22,7 +22,7 @@ const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
   ];
 
   return (
-    <div className="controls-container flex flex-col items-center justify-center w-full pl-9">
+    <div className="controls-container flex flex-col items-center justify-center w-full px-20">
       <div className="face-buttons-container grid grid-cols-2 gap-2 mb-4 w-full sm:grid-cols-3 lg:grid-cols-6">
         {faceButtons.map(({ face, label }) => (
           <button
@@ -45,7 +45,7 @@ const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
           </button>
         ))}
       </div>
-      <div className="flex gap-4 items-center justify-center w-full">
+      <div className="flex gap-4 items-center justify-between  px-12 pt-2 w-full">
         <button
           onClick={() => onRotate(selectedFace, Direction.Counterclockwise)}
           className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-200 ease-in-out transform hover:-rotate-90"
