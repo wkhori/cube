@@ -1,5 +1,7 @@
 # Cube
 
+[Live Demo](https://cube-blue-ten.vercel.app/)
+
 resources/references:
 
 - https://rubikscu.be/
