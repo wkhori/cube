@@ -1,5 +1,12 @@
-import { useState } from 'react';
-import { Color, Direction, Face, faceAdjacencyMap, faceEdgeIndicesMap } from '../types/cubeTypes';
+import { useState } from "react";
+import {
+  Color,
+  Direction,
+  Face,
+  faceAdjacencyMap,
+  faceEdgeIndicesMap,
+  faceIndices,
+} from "../types/cubeTypes";
 
 type CubeState = Record<Face, Color[]>;
 
@@ -15,64 +22,86 @@ const initialCubeState: CubeState = {
 export const useCubeState = () => {
   const [cubeState, setCubeState] = useState<CubeState>(initialCubeState);
 
-  const getCubeletColors = (position: [number, number, number]): Color[] => {
-    const colors: Color[] = Array(6).fill(Color.Black);
-    if (position[0] === 1) colors[0] = cubeState[Face.Right][getIndex(position, Face.Right)];
-    if (position[0] === -1) colors[1] = cubeState[Face.Left][getIndex(position, Face.Left)];
-    if (position[1] === 1) colors[2] = cubeState[Face.Up][getIndex(position, Face.Up)];
-    if (position[1] === -1) colors[3] = cubeState[Face.Down][getIndex(position, Face.Down)];
-    if (position[2] === 1) colors[4] = cubeState[Face.Front][getIndex(position, Face.Front)];
-    if (position[2] === -1) colors[5] = cubeState[Face.Back][getIndex(position, Face.Back)];
-    return colors;
+  const _getIndex = (
+    position: [number, number, number],
+    face: Face
+  ): number => {
+    return faceIndices[face](position);
   };
 
-  const getIndex = (position: [number, number, number], face: Face): number => {
-    switch (face) {
-      case Face.Right:
-      case Face.Left:
-        return (1 - position[1]) * 3 + (1 - position[2]);
-      case Face.Up:
-      case Face.Down:
-        return (1 - position[0]) * 3 + (1 - position[2]);
-      case Face.Front:
-      case Face.Back:
-        return (1 - position[0]) * 3 + (1 - position[1]);
-      default:
-        return 4; // Center
-    }
-  };
-
-  const rotateMatrix = (matrix: Color[], clockwise: boolean): Color[] => {
+  const _rotateFace = (matrix: Color[], clockwise: boolean): Color[] => {
     const newMatrix = [...matrix];
-    const map = clockwise ? [6, 3, 0, 7, 4, 1, 8, 5, 2] : [2, 5, 8, 1, 4, 7, 0, 3, 6];
+    const map = clockwise
+      ? [6, 3, 0, 7, 4, 1, 8, 5, 2]
+      : [2, 5, 8, 1, 4, 7, 0, 3, 6];
     for (let i = 0; i < 9; i++) {
       newMatrix[i] = matrix[map[i]];
     }
     return newMatrix;
   };
 
-  const rotateEdges = (face: Face, direction: Direction): CubeState => {
-    
-  
+  const _rotateAdjacentEdges = (
+    face: Face,
+    direction: Direction
+  ): CubeState => {
     const adjFaces = faceAdjacencyMap[face];
     const edgeIndices = faceEdgeIndicesMap[face];
-    const temp = adjFaces.map((f, idx) => edgeIndices[f].map(edgeIdx => cubeState[f][edgeIdx]));
-  
+    const temp = adjFaces.map((f, idx) =>
+      edgeIndices[f].map((edgeIdx) => cubeState[f][edgeIdx])
+    );
+
     const newCubeState = { ...cubeState };
-  
+
     adjFaces.forEach((f, idx) => {
       edgeIndices[f].forEach((edgeIdx, i) => {
-        newCubeState[f][edgeIdx] = temp[(idx + (direction === Direction.Clockwise ? 3 : 1)) % 4][i];
+        newCubeState[f][edgeIdx] =
+          temp[(idx + (direction === Direction.Clockwise ? 3 : 1)) % 4][i];
       });
     });
-  
-    console.log(newCubeState);
+
     return newCubeState;
   };
-  
+
+  const getCubeletColors = (position: [number, number, number]): Color[] => {
+    const colors: Color[] = Array(6).fill(Color.Black);
+
+    const faceColorMapping: { [key: number]: Face } = {
+      0: Face.Right,
+      1: Face.Left,
+      2: Face.Up,
+      3: Face.Down,
+      4: Face.Front,
+      5: Face.Back,
+    };
+
+    const facePositionMapping: { [key: number]: number } = {
+      0: position[0],
+      1: -position[0],
+      2: position[1],
+      3: -position[1],
+      4: position[2],
+      5: -position[2],
+    };
+
+    Object.keys(faceColorMapping).forEach((key) => {
+      const index = Number(key);
+      if (facePositionMapping[index] === 1) {
+        colors[index] =
+          cubeState[faceColorMapping[index]][
+            _getIndex(position, faceColorMapping[index])
+          ];
+      }
+    });
+
+    return colors;
+  };
+
   const handleRotate = (face: Face, direction: Direction) => {
-    const newFaceColors = rotateMatrix(cubeState[face], direction === Direction.Clockwise);
-    const newCubeState = rotateEdges(face, direction);
+    const newFaceColors = _rotateFace(
+      cubeState[face],
+      direction === Direction.Clockwise
+    );
+    const newCubeState = _rotateAdjacentEdges(face, direction);
     setCubeState({ ...newCubeState, [face]: newFaceColors });
   };
 
