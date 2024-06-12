@@ -2,7 +2,8 @@ import { useLoader } from "@react-three/fiber";
 import React, { useMemo } from "react";
 import { PlaneGeometry, TextureLoader } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { Color, colorsMap } from "../types/cubeTypes";
+import { Color } from "../types/cubeTypes";
+import { colorsMap } from "../types/mappings";
 
 interface CubeletProps {
   position: number[];
@@ -15,7 +16,7 @@ const Cubelet: React.FC<CubeletProps> = ({ position, geometry, colors }) => {
 
   const logoGeometry = useMemo(() => new PlaneGeometry(0.6, 0.6), []);
 
-  // display cube logo on center cubelet of the white face
+  // display cube logo on center cubelet of the Top (white) face
   const displayLogo =
     position[0] === 0 && position[1] === 1 && position[2] === 0;
 

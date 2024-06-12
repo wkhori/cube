@@ -11,7 +11,8 @@ import CubeComponent3D from "./CubeComponent3D";
 import CubeControls from "./CubeControls";
 
 const CubeScene: React.FC = () => {
-  const { handleRotate, getCubeletColors } = useCubeState();
+  const { handleRotate, getCubeletColors, resetCube, randomizeCube } =
+    useCubeState();
 
   const handleButtonClick = (face: Face, direction: Direction) => {
     handleRotate(face, direction);
@@ -32,7 +33,11 @@ const CubeScene: React.FC = () => {
         />
         <Environment preset="city" />
       </Canvas>
-      <CubeControls onRotate={handleButtonClick} />
+      <CubeControls
+        onRotate={handleButtonClick}
+        resetCube={resetCube}
+        randomizeCube={randomizeCube}
+      />
     </div>
   );
 };

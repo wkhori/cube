@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { Color, Direction, Face } from "../types/cubeTypes";
 import {
-  Color,
-  Direction,
-  Face,
   faceAdjacencyMap,
   faceEdgeIndicesMap,
   faceIndices,
-} from "../types/cubeTypes";
+} from "../types/mappings";
 
 type CubeState = Record<Face, Color[]>;
 
@@ -31,6 +29,7 @@ export const useCubeState = () => {
 
   const _rotateFace = (matrix: Color[], clockwise: boolean): Color[] => {
     const newMatrix = [...matrix];
+
     const map = clockwise
       ? [6, 3, 0, 7, 4, 1, 8, 5, 2]
       : [2, 5, 8, 1, 4, 7, 0, 3, 6];
@@ -97,13 +96,52 @@ export const useCubeState = () => {
   };
 
   const handleRotate = (face: Face, direction: Direction) => {
-    const newFaceColors = _rotateFace(
-      cubeState[face],
-      direction === Direction.Clockwise
-    );
+    const isClockwise = direction === Direction.Clockwise;
+    let isPerspectiveInverted = isClockwise;
+    if (face === Face.Back || face === Face.Left || face === Face.Up) {
+      isPerspectiveInverted = !isPerspectiveInverted;
+    }
+    const newFaceColors = _rotateFace(cubeState[face], isPerspectiveInverted);
     const newCubeState = _rotateAdjacentEdges(face, direction);
     setCubeState({ ...newCubeState, [face]: newFaceColors });
   };
 
-  return { cubeState, handleRotate, getCubeletColors };
+  const resetCube = () => {
+    setCubeState({
+      [Face.Up]: Array(9).fill(Color.White),
+      [Face.Down]: Array(9).fill(Color.Yellow),
+      [Face.Front]: Array(9).fill(Color.Green),
+      [Face.Back]: Array(9).fill(Color.Blue),
+      [Face.Left]: Array(9).fill(Color.Orange),
+      [Face.Right]: Array(9).fill(Color.Red),
+    });
+  };
+
+  const randomizeCube = () => {
+    const faces = Object.values(Face);
+    const directions = [Direction.Clockwise, Direction.Counterclockwise];
+    let newCubeState = { ...cubeState };
+
+    for (let i = 0; i < 100; i++) {
+      const randomFace = faces[Math.floor(Math.random() * faces.length)];
+      const randomDirection =
+        directions[Math.floor(Math.random() * directions.length)];
+      const newFaceColors = _rotateFace(
+        newCubeState[randomFace],
+        randomDirection === Direction.Clockwise
+      );
+      newCubeState = _rotateAdjacentEdges(randomFace, randomDirection);
+      newCubeState[randomFace] = newFaceColors;
+    }
+
+    setCubeState(newCubeState);
+  };
+
+  return {
+    cubeState,
+    handleRotate,
+    getCubeletColors,
+    resetCube,
+    randomizeCube,
+  };
 };

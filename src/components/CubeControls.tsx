@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { Direction, Face, defaultFaceColors } from "../types/cubeTypes";
+import { Direction, Face } from "../types/cubeTypes";
+import { defaultFaceColors } from "../types/mappings";
 
 interface ControlsProps {
   onRotate: (face: Face, direction: Direction) => void;
+  resetCube: () => void;
+  randomizeCube: () => void;
 }
 
-const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
+const CubeControls: React.FC<ControlsProps> = ({
+  onRotate,
+  resetCube,
+  randomizeCube,
+}) => {
   const [selectedFace, setSelectedFace] = useState<Face>(Face.Up);
 
   const handleFaceChange = (face: Face) => {
@@ -55,6 +62,18 @@ const CubeControls: React.FC<ControlsProps> = ({ onRotate }) => {
             alt="Counter Clockwise"
             className="w-8 h-8"
           />
+        </button>
+        <button
+          className="px-5 py-3 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-200 ease-in-out transform hover:scale-105 text-black"
+          onClick={resetCube}
+        >
+          Reset
+        </button>
+        <button
+          className="px-5 py-3 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-200 ease-in-out transform hover:scale-105 text-black"
+          onClick={randomizeCube}
+        >
+          Randomize
         </button>
         <button
           onClick={() => onRotate(selectedFace, Direction.Clockwise)}
